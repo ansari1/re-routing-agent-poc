@@ -1,0 +1,54 @@
+server:
+  port: ${AGENT_PORT:8080}
+
+spring:
+  application:
+    name: rerouting-agent
+
+app:
+  api:
+    description: Autonomous checkout agent that re-routes delayed deliveries
+  services:
+    order-url: ${ORDER_SERVICE_URL:http://localhost:8081}
+    inventory-url: ${INVENTORY_SERVICE_URL:http://localhost:8082}
+    payment-url: ${PAYMENT_SERVICE_URL:http://localhost:8083}
+    crm-url: ${CRM_SERVICE_URL:http://localhost:8084}
+    delivery-url: ${DELIVERY_SERVICE_URL:http://localhost:8085}
+    connect-timeout: ${HTTP_CONNECT_TIMEOUT:2s}
+    read-timeout: ${HTTP_READ_TIMEOUT:5s}
+  agent:
+    max-reroute-attempts: ${AGENT_MAX_REROUTE_ATTEMPTS:3}
+    gemini:
+      enabled: ${GEMINI_ENABLED:false}
+      project: ${GCP_PROJECT_ID:}
+      location: ${GCP_LOCATION:us-central1}
+      model: ${GEMINI_MODEL:gemini-2.0-flash}
+      temperature: ${GEMINI_TEMPERATURE:0}
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: ${CB_WINDOW_SIZE:10}
+        minimum-number-of-calls: ${CB_MIN_CALLS:5}
+        failure-rate-threshold: ${CB_FAILURE_RATE:50}
+        wait-duration-in-open-state: ${CB_OPEN_WAIT:30s}
+        permitted-number-of-calls-in-half-open-state: 2
+        record-exceptions:
+          - com.commerce.common.error.UpstreamUnavailableException
+          - com.commerce.common.error.DeliveryDelayedException
+        ignore-exceptions:
+          - com.commerce.common.error.BusinessRuleException
+          - com.commerce.common.error.NotFoundException
+      delivery:
+        base-config: default
+        sliding-window-size: ${CB_DELIVERY_WINDOW_SIZE:6}
+        minimum-number-of-calls: ${CB_DELIVERY_MIN_CALLS:3}
+        wait-duration-in-open-state: ${CB_DELIVERY_OPEN_WAIT:60s}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,circuitbreakers

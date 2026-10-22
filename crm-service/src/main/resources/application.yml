@@ -1,0 +1,33 @@
+server:
+  port: ${CRM_SERVICE_PORT:8084}
+
+spring:
+  application:
+    name: crm-service
+  datasource:
+    url: ${CRM_DB_URL:jdbc:h2:mem:crm;DB_CLOSE_DELAY=-1}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    open-in-view: false
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:false}
+
+app:
+  api:
+    description: Customer records and notification activity log
+  pagination:
+    default-size: ${PAGE_DEFAULT_SIZE:20}
+    max-size: ${PAGE_MAX_SIZE:100}
+  cache:
+    ttl: ${CACHE_TTL:5m}
+    maximum-size: ${CACHE_MAX_SIZE:1000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

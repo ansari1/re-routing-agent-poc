@@ -1,0 +1,51 @@
+server:
+  port: ${INVENTORY_SERVICE_PORT:8082}
+
+spring:
+  application:
+    name: inventory-service
+  datasource:
+    url: ${INVENTORY_DB_URL:jdbc:h2:mem:inventory;DB_CLOSE_DELAY=-1}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    open-in-view: false
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:false}
+
+app:
+  api:
+    description: Warehouses, stock levels, availability search and reservations
+  pagination:
+    default-size: ${PAGE_DEFAULT_SIZE:20}
+    max-size: ${PAGE_MAX_SIZE:100}
+  cache:
+    ttl: ${CACHE_TTL:5m}
+    maximum-size: ${CACHE_MAX_SIZE:1000}
+  seed:
+    enabled: ${INVENTORY_SEED_ENABLED:true}
+    warehouses:
+      - code: LON
+        name: London Central
+        region: SOUTH_ENGLAND
+        priority: 1
+        stock: { SKU-100: 50, SKU-200: 30 }
+      - code: MAN
+        name: Manchester Hub
+        region: NORTH_ENGLAND
+        priority: 2
+        stock: { SKU-100: 40, SKU-200: 20 }
+      - code: BHX
+        name: Birmingham Depot
+        region: MIDLANDS
+        priority: 3
+        stock: { SKU-100: 25, SKU-200: 10 }
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

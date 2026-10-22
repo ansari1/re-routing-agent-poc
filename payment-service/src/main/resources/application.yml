@@ -1,0 +1,35 @@
+server:
+  port: ${PAYMENT_SERVICE_PORT:8083}
+
+spring:
+  application:
+    name: payment-service
+  datasource:
+    url: ${PAYMENT_DB_URL:jdbc:h2:mem:payments;DB_CLOSE_DELAY=-1}
+    username: ${DB_USERNAME:sa}
+    password: ${DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    open-in-view: false
+  h2:
+    console:
+      enabled: ${H2_CONSOLE_ENABLED:false}
+
+app:
+  api:
+    description: Payment authorisation service
+  payment:
+    max-amount: ${PAYMENT_MAX_AMOUNT:10000}
+  pagination:
+    default-size: ${PAGE_DEFAULT_SIZE:20}
+    max-size: ${PAGE_MAX_SIZE:100}
+  cache:
+    ttl: ${CACHE_TTL:5m}
+    maximum-size: ${CACHE_MAX_SIZE:1000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
